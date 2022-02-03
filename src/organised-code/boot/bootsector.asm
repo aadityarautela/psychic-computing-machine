@@ -5,11 +5,14 @@ KERNEL_OFFSET equ 0x1000    ; mem offset to which kernel is loaded
     mov sp, bp
     mov bx, MSG_RM   
     call print
+    call print_newline
+    
     call load_kernel        ; load kernel
     call switch_to_pm       ; switch to 32bit
     jmp $
 
 %include "boot/bootsector-print-str.asm"
+%include "boot/bootsector-print-hex.asm"
 %include "boot/load-disk.asm"
 %include "boot/32bit-gdt.asm"
 %include "boot/32bit-switch.asm"
@@ -22,7 +25,7 @@ load_kernel:
     call print_newline
 
     mov bx, KERNEL_OFFSET       ; read disk, store in KERNEL_OFFSET
-    mov dh, 2
+    mov dh, 16
     mov dl, [BOOT_DRIVE]
     call load_disk
     ret

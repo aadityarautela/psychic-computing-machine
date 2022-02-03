@@ -47,6 +47,7 @@ int print_char(char c, int col, int row, char attr) {
   if (col >= MAX_COLS || row >= MAX_ROWS) {
     vidmem[2 * (MAX_COLS) * (MAX_ROWS)-2] = 'F';
     vidmem[2 * (MAX_COLS) * (MAX_ROWS)-1] = RED_ON_WHITE;
+    return get_offset(col, row);
   }
 
   int offset;

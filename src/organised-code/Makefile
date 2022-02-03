@@ -5,6 +5,7 @@ OBJ = ${C_SOURCES:.c=.o}
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
+LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/bin/gdb
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
@@ -16,11 +17,11 @@ os-img.bin: boot/bootsector.bin kernel.bin
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
 kernel.bin: boot/kernel_entry.o ${OBJ}
-	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
+	${LD} -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # Used for debugging purposes
 kernel.elf: boot/kernel_entry.o ${OBJ}
-	i386-elf-ld -o $@ -Ttext 0x1000 $^ 
+	${LD} -o $@ -Ttext 0x1000 $^ 
 
 run: os-img.bin
 	qemu-system-x86_64 -fda os-img.bin
