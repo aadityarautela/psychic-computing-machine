@@ -1,7 +1,7 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)
 # Nice syntax for file extension replacement
-OBJ = ${C_SOURCES:.c=.o}
+OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
@@ -9,6 +9,8 @@ LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/bin/gdb
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
+# --allow-multiple-definition: self explanatory
+LFLAGS = --allow-multiple-definition
 
 # First rule is run by default
 os-img.bin: boot/bootsector.bin kernel.bin
@@ -17,11 +19,11 @@ os-img.bin: boot/bootsector.bin kernel.bin
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
 kernel.bin: boot/kernel_entry.o ${OBJ}
-	${LD} -o $@ -Ttext 0x1000 $^ --oformat binary
+	${LD} ${LFLAGS} -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # Used for debugging purposes
 kernel.elf: boot/kernel_entry.o ${OBJ}
-	${LD} -o $@ -Ttext 0x1000 $^ 
+	${LD} ${LFLAGS} -o $@ -Ttext 0x1000 $^ 
 
 run: os-img.bin
 	qemu-system-x86_64 -fda os-img.bin
